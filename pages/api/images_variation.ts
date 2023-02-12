@@ -36,8 +36,7 @@ export default async function (req: NextApiRequest, res: NextApiResponse) {
     const filePath = `${directory}/file.jpg`;
     await downloadFile(url, filePath);
     const response = await openai.createImageVariation(
-      // @ts-ignore
-      createReadStream(filePath),
+      createReadStream(filePath) as any,
       GENERATE_IMAGE_NUM,
       IMAGE_SIZE
     );
