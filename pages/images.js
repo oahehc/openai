@@ -92,8 +92,8 @@ export default function Page() {
               <img
                 key={url}
                 src={url}
-                width={128}
-                height={128}
+                width={256}
+                height={256}
                 atl="img"
                 onClick={() => setSelectedUrl(url)}
                 className={url === selectedUrl ? styles.selectedImage : ""}

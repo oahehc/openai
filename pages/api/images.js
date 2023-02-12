@@ -1,4 +1,5 @@
 import { Configuration, OpenAIApi } from "openai";
+import { GENERATE_IMAGE_NUM, IMAGE_SIZE } from "./constants";
 
 const configuration = new Configuration({
   apiKey: process.env.OPENAI_API_KEY,
@@ -29,8 +30,8 @@ export default async function (req, res) {
   try {
     const response = await openai.createImage({
       prompt: text,
-      n: 5,
-      size: "256x256",
+      n: GENERATE_IMAGE_NUM,
+      size: IMAGE_SIZE,
     });
     res.status(200).json({ result: response.data });
   } catch (error) {

@@ -2,6 +2,7 @@ import { Configuration, OpenAIApi } from "openai";
 import { createReadStream, createWriteStream } from "node:fs";
 import path from "node:path";
 import https from "node:https";
+import { GENERATE_IMAGE_NUM, IMAGE_SIZE } from "./constants";
 
 const configuration = new Configuration({
   apiKey: process.env.OPENAI_API_KEY,
@@ -35,8 +36,8 @@ export default async function (req, res) {
     await downloadFile(url, filePath);
     const response = await openai.createImageVariation(
       createReadStream(filePath),
-      3,
-      "256x256"
+      GENERATE_IMAGE_NUM,
+      IMAGE_SIZE
     );
     res.status(200).json({ result: response.data });
   } catch (error) {
