@@ -42,7 +42,7 @@ export default function Page() {
       </Head>
 
       <main className={styles.main}>
-        <img src="/dog.png" className={styles.icon} />
+        <img src="/dog.png" className={styles.icon} alt="icon" />
         <h3>Name my pet</h3>
         <form onSubmit={onSubmit}>
           <input

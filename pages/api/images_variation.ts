@@ -3,13 +3,14 @@ import { createReadStream, createWriteStream } from "node:fs";
 import path from "node:path";
 import https from "node:https";
 import { GENERATE_IMAGE_NUM, IMAGE_SIZE } from "./constants";
+import type { NextApiRequest, NextApiResponse } from "next";
 
 const configuration = new Configuration({
   apiKey: process.env.OPENAI_API_KEY,
 });
 const openai = new OpenAIApi(configuration);
 
-export default async function (req, res) {
+export default async function (req: NextApiRequest, res: NextApiResponse) {
   if (!configuration.apiKey) {
     res.status(500).json({
       error: {
@@ -35,6 +36,7 @@ export default async function (req, res) {
     const filePath = `${directory}/file.jpg`;
     await downloadFile(url, filePath);
     const response = await openai.createImageVariation(
+      // @ts-ignore
       createReadStream(filePath),
       GENERATE_IMAGE_NUM,
       IMAGE_SIZE

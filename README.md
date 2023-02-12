@@ -6,5 +6,4 @@
 
 ### To-Do List
 
-[ ] migrate to Typescript
 [ ] add loading icon and disabled button

@@ -94,7 +94,7 @@ export default function Page() {
                 src={url}
                 width={256}
                 height={256}
-                atl="img"
+                alt="img"
                 onClick={() => setSelectedUrl(url)}
                 className={url === selectedUrl ? styles.selectedImage : ""}
               />
