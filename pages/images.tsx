@@ -1,4 +1,3 @@
-import Head from "next/head";
 import { useState } from "react";
 import styles from "./index.module.css";
 
@@ -65,42 +64,37 @@ export default function Page() {
   }
 
   return (
-    <div>
-      <Head>
-        <title>OpenAI API</title>
-      </Head>
-      <main className={styles.main}>
-        <h3>Generate Images by text</h3>
+    <main className={styles.main}>
+      <h3>Generate Images by text</h3>
+      <input
+        type="text"
+        name="text"
+        placeholder="type something"
+        value={input}
+        onChange={(e) => setInput(e.target.value)}
+      />
+      <input type="button" value="Generate Images" onClick={generateImages} />
+      {selectedUrl && (
         <input
-          type="text"
-          name="text"
-          placeholder="type something"
-          value={input}
-          onChange={(e) => setInput(e.target.value)}
+          type="button"
+          value="Generate Variation"
+          onClick={generateVariation}
         />
-        <input type="button" value="Generate Images" onClick={generateImages} />
-        {selectedUrl && (
-          <input
-            type="button"
-            value="Generate Variation"
-            onClick={generateVariation}
-          />
-        )}
-        <div className={styles.result}>
-          {result.length > 0 &&
-            result.map(({ url }) => (
-              <img
-                key={url}
-                src={url}
-                width={256}
-                height={256}
-                alt="img"
-                onClick={() => setSelectedUrl(url)}
-                className={url === selectedUrl ? styles.selectedImage : ""}
-              />
-            ))}
-        </div>
-      </main>
-    </div>
+      )}
+      <div className={styles.result}>
+        {result.length > 0 &&
+          result.map(({ url }) => (
+            <img
+              key={url}
+              src={url}
+              width={256}
+              height={256}
+              alt="img"
+              onClick={() => setSelectedUrl(url)}
+              className={url === selectedUrl ? styles.selectedImage : ""}
+            />
+          ))}
+      </div>
+    </main>
   );
 }

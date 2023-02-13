@@ -1,4 +1,3 @@
-import Head from "next/head";
 import { useState } from "react";
 import styles from "./index.module.css";
 
@@ -35,27 +34,20 @@ export default function Page() {
   }
 
   return (
-    <div>
-      <Head>
-        <title>OpenAI API</title>
-        <link rel="icon" href="/dog.png" />
-      </Head>
-
-      <main className={styles.main}>
-        <img src="/dog.png" className={styles.icon} alt="icon" />
-        <h3>Name my pet</h3>
-        <form onSubmit={onSubmit}>
-          <input
-            type="text"
-            name="animal"
-            placeholder="Enter an animal"
-            value={animalInput}
-            onChange={(e) => setAnimalInput(e.target.value)}
-          />
-          <input type="submit" value="Generate names" />
-        </form>
-        <div className={styles.result}>{result}</div>
-      </main>
-    </div>
+    <main className={styles.main}>
+      <img src="/dog.png" className={styles.icon} alt="icon" />
+      <h3>Name my pet</h3>
+      <form onSubmit={onSubmit}>
+        <input
+          type="text"
+          name="animal"
+          placeholder="Enter an animal"
+          value={animalInput}
+          onChange={(e) => setAnimalInput(e.target.value)}
+        />
+        <input type="submit" value="Generate names" />
+      </form>
+      <div className={styles.result}>{result}</div>
+    </main>
   );
 }
