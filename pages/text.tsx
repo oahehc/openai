@@ -1,37 +1,30 @@
 import { useState } from "react";
-import { Input, List, Button, Space } from "antd";
+import { Input, List, Button, Space, Alert } from "antd";
+import { fetcher } from "../utils/fetcher";
 
 const { TextArea } = Input;
 
 export default function Page() {
   const [text, setText] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState("");
   const [result, setResult] = useState<any[]>();
 
-  async function onSubmit() {
+  async function getCompletion() {
     try {
       setIsLoading(true);
-      const response = await fetch("/api/completion", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ text }),
-      });
+      setError("");
 
-      const data = await response.json();
-      if (response.status !== 200) {
-        throw (
-          data.error ||
-          new Error(`Request failed with status ${response.status}`)
-        );
-      }
+      const data = await fetcher({
+        method: "POST",
+        path: "/api/completion",
+        body: { text },
+      });
 
       setResult(data.result);
     } catch (error) {
-      // Consider implementing your own error handling logic here
       console.error(error);
-      alert(error.message);
+      setError(error.message);
     } finally {
       setIsLoading(false);
     }
@@ -42,13 +35,14 @@ export default function Page() {
       <h1>Modify the sentence</h1>
       <Space direction="vertical" style={{ display: "flex" }}>
         <TextArea
+          size="large"
           value={text}
           onChange={(e) => setText(e.target.value)}
           placeholder="Enter a sentence"
           autoSize={{ minRows: 3, maxRows: 5 }}
         />
-        <Button type="primary" loading={isLoading} onClick={onSubmit}>
-          {isLoading ? "Loading" : "Submit"}
+        <Button type="primary" loading={isLoading} onClick={getCompletion}>
+          {isLoading ? "Loading" : "Completion"}
         </Button>
         <List
           header={<h3>Result</h3>}
@@ -56,6 +50,9 @@ export default function Page() {
           dataSource={result}
           renderItem={(item) => <List.Item>{item.text}</List.Item>}
         />
+        {error && (
+          <Alert message="Error" description={error} type="error" showIcon />
+        )}
       </Space>
     </>
   );

@@ -1,9 +1,11 @@
 import { useState } from "react";
-import { Input, Image, Button, Space } from "antd";
+import { Input, Image, Button, Space, Alert } from "antd";
+import { fetcher } from "../utils/fetcher";
 
 export default function Page() {
   const [input, setInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState("");
   const [result, setResult] = useState([]);
   const [selectedUrl, setSelectedUrl] = useState("");
 
@@ -11,27 +13,18 @@ export default function Page() {
     if (input) {
       try {
         setIsLoading(true);
-        const response = await fetch("/api/images", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ text: input }),
-        });
+        setError("");
 
-        const data = await response.json();
-        if (response.status !== 200) {
-          throw (
-            data.error ||
-            new Error(`Request failed with status ${response.status}`)
-          );
-        }
+        const data = await fetcher({
+          method: "POST",
+          path: "/api/images",
+          body: { text: input },
+        });
 
         setResult(data.result.data);
       } catch (error) {
-        // Consider implementing your own error handling logic here
         console.error(error);
-        alert(error.message);
+        setError(error.message);
       } finally {
         setIsLoading(false);
       }
@@ -42,27 +35,18 @@ export default function Page() {
     if (selectedUrl) {
       try {
         setIsLoading(true);
-        const response = await fetch("/api/images_variation", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ url: selectedUrl }),
-        });
+        setError("");
 
-        const data = await response.json();
-        if (response.status !== 200) {
-          throw (
-            data.error ||
-            new Error(`Request failed with status ${response.status}`)
-          );
-        }
+        const data = await fetcher({
+          method: "POST",
+          path: "/api/images_variation",
+          body: { url: selectedUrl },
+        });
 
         setResult((cur) => [...cur, ...data.result.data]);
       } catch (error) {
-        // Consider implementing your own error handling logic here
         console.error(error);
-        alert(error.message);
+        setError(error.message);
       } finally {
         setIsLoading(false);
       }
@@ -102,6 +86,9 @@ export default function Page() {
               />
             ))}
         </div>
+        {error && (
+          <Alert message="Error" description={error} type="error" showIcon />
+        )}
       </Space>
     </>
   );
