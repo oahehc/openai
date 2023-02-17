@@ -17,7 +17,7 @@ export default function Page() {
 
         const data = await fetcher({
           method: "POST",
-          path: "/api/images",
+          path: "/api/images_generation",
           body: { text: input },
         });
 
@@ -62,18 +62,16 @@ export default function Page() {
           value={input}
           onChange={(e) => setInput(e.target.value)}
         />
-        <Button type="primary" loading={isLoading} onClick={generateImages}>
-          {isLoading ? "Loading" : "Generate Images"}
-        </Button>
-        {selectedUrl && (
-          <Button
-            type="primary"
-            loading={isLoading}
-            onClick={generateVariation}
-          >
-            {isLoading ? "Loading" : "Generate Variation"}
+        <Space>
+          <Button type="primary" loading={isLoading} onClick={generateImages}>
+            {isLoading ? "Loading" : "Generate Images"}
           </Button>
-        )}
+          {selectedUrl && (
+            <Button loading={isLoading} onClick={generateVariation}>
+              {isLoading ? "Loading" : "Generate Variation"}
+            </Button>
+          )}
+        </Space>
         <div>
           {result.length > 0 &&
             result.map(({ url }) => (

@@ -16,11 +16,19 @@ export default async function (req: NextApiRequest, res: NextApiResponse) {
     return;
   }
 
-  const url = req.body.url || "";
-  if (url.trim().length === 0) {
+  const { url, text } = req.body;
+  if (!url || url.trim().length === 0) {
     res.status(400).json({
       error: {
         message: "Please enter a valid url",
+      },
+    });
+    return;
+  }
+  if (!text || text.trim().length === 0) {
+    res.status(400).json({
+      error: {
+        message: "Please enter a valid text",
       },
     });
     return;
@@ -30,8 +38,11 @@ export default async function (req: NextApiRequest, res: NextApiResponse) {
     const directory = path.join(process.cwd(), "temp");
     const filePath = `${directory}/file.jpg`;
     await downloadFile(url, filePath);
-    const response = await openai.createImageVariation(
+    // FIXME: PNG file only
+    const response = await openai.createImageEdit(
       createReadStream(filePath) as any,
+      createReadStream(filePath) as any,
+      text,
       GENERATE_IMAGE_NUM,
       IMAGE_SIZE
     );

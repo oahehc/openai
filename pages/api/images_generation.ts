@@ -1,4 +1,4 @@
-import { GENERATE_IMAGE_NUM, IMAGE_SIZE } from "./constants";
+import { GENERATE_IMAGE_NUM, IMAGE_SIZE } from "../../utils/constants";
 import { configuration, openai } from "../../utils/openAI";
 import type { NextApiRequest, NextApiResponse } from "next";
 
