@@ -27,11 +27,11 @@ export default async function (req: NextApiRequest, res: NextApiResponse) {
       model: "text-davinci-003",
       prompt: text,
       // suffix: "",
-      max_tokens: 30,
+      max_tokens: 100,
       temperature: 0.8,
       // top_p: 1,
       n: 3,
-      best_of: 3,
+      // best_of: 3,
       presence_penalty: 0,
       frequency_penalty: 0,
     });

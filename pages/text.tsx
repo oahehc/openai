@@ -10,6 +10,48 @@ export default function Page() {
   const [error, setError] = useState("");
   const [result, setResult] = useState<any[]>();
 
+  async function getTranslations() {
+    try {
+      setIsLoading(true);
+      setError("");
+
+      const data = await fetcher({
+        method: "POST",
+        path: "/api/completion",
+        body: {
+          text: `Translate this into 1. Chinese, 2. Japanese:\n\n${text}\n\n`,
+        },
+      });
+
+      setResult(data.result);
+    } catch (error) {
+      console.error(error);
+      setError(error.message);
+    } finally {
+      setIsLoading(false);
+    }
+  }
+
+  async function checkGrammar() {
+    try {
+      setIsLoading(true);
+      setError("");
+
+      const data = await fetcher({
+        method: "POST",
+        path: "/api/completion",
+        body: { text: `Correct this to standard English:\n\n${text}` },
+      });
+
+      setResult(data.result);
+    } catch (error) {
+      console.error(error);
+      setError(error.message);
+    } finally {
+      setIsLoading(false);
+    }
+  }
+
   async function getCompletion() {
     try {
       setIsLoading(true);
@@ -64,7 +106,6 @@ export default function Page() {
         path: "/api/moderation",
         body: { text },
       });
-      console.log("data", data);
 
       setModerationResult(data.result?.[0]?.category_scores || {});
     } catch (error) {
@@ -87,6 +128,12 @@ export default function Page() {
           autoSize={{ minRows: 3, maxRows: 5 }}
         />
         <Space>
+          <Button type="primary" loading={isLoading} onClick={getTranslations}>
+            {isLoading ? "Loading" : "Translate"}
+          </Button>
+          <Button type="primary" loading={isLoading} onClick={checkGrammar}>
+            {isLoading ? "Loading" : "Grammar"}
+          </Button>
           <Button type="primary" loading={isLoading} onClick={getCompletion}>
             {isLoading ? "Loading" : "Completion"}
           </Button>
