@@ -1,11 +1,6 @@
-import { Configuration, OpenAIApi } from "openai";
 import { GENERATE_IMAGE_NUM, IMAGE_SIZE } from "./constants";
+import { configuration, openai } from "../../utils/openAI";
 import type { NextApiRequest, NextApiResponse } from "next";
-
-const configuration = new Configuration({
-  apiKey: process.env.OPENAI_API_KEY,
-});
-const openai = new OpenAIApi(configuration);
 
 export default async function (req: NextApiRequest, res: NextApiResponse) {
   if (!configuration.apiKey) {

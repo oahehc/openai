@@ -1,10 +1,5 @@
-import { Configuration, OpenAIApi } from "openai";
 import type { NextApiRequest, NextApiResponse } from "next";
-
-const configuration = new Configuration({
-  apiKey: process.env.OPENAI_API_KEY,
-});
-const openai = new OpenAIApi(configuration);
+import { configuration, openai } from "../../utils/openAI";
 
 export default async function (req: NextApiRequest, res: NextApiResponse) {
   if (!configuration.apiKey) {

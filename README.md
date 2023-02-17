@@ -7,5 +7,3 @@
 - examples: https://platform.openai.com/examples
 
 ### To-Do List
-
-[ ] template for page and API
