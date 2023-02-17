@@ -1,19 +1,33 @@
 import Link from "next/link";
+import { List } from "antd";
+
+const links = [
+  {
+    path: "/text",
+    description: "Text completion and editing",
+  },
+  {
+    path: "/images",
+    description: "Text to Images",
+  },
+  {
+    path: "/pet",
+    description: "Generate pet name (tutorial)",
+  },
+];
 
 export default function Home() {
   return (
     <main>
-      <ul>
-        <li>
-          <Link href="/pet">Generate pet name (tutorial)</Link>
-        </li>
-        <li>
-          <Link href="/completion">Modify the sentences</Link>
-        </li>
-        <li>
-          <Link href="/images">Generate images by text</Link>
-        </li>
-      </ul>
+      <List
+        bordered
+        dataSource={links}
+        renderItem={({ path, description }) => (
+          <List.Item>
+            <Link href={path}>{description}</Link>
+          </List.Item>
+        )}
+      />
     </main>
   );
 }

@@ -1,14 +1,16 @@
 import { useState } from "react";
-import styles from "./index.module.css";
+import { Input, Image, Button, Space } from "antd";
 
 export default function Page() {
   const [input, setInput] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
   const [result, setResult] = useState([]);
   const [selectedUrl, setSelectedUrl] = useState("");
 
-  async function generateImages(event) {
+  async function generateImages() {
     if (input) {
       try {
+        setIsLoading(true);
         const response = await fetch("/api/images", {
           method: "POST",
           headers: {
@@ -30,14 +32,16 @@ export default function Page() {
         // Consider implementing your own error handling logic here
         console.error(error);
         alert(error.message);
+      } finally {
+        setIsLoading(false);
       }
     }
   }
 
-  async function generateVariation(event) {
-    event.preventDefault();
+  async function generateVariation() {
     if (selectedUrl) {
       try {
+        setIsLoading(true);
         const response = await fetch("/api/images_variation", {
           method: "POST",
           headers: {
@@ -59,42 +63,46 @@ export default function Page() {
         // Consider implementing your own error handling logic here
         console.error(error);
         alert(error.message);
+      } finally {
+        setIsLoading(false);
       }
     }
   }
 
   return (
-    <main className={styles.main}>
-      <h3>Generate Images by text</h3>
-      <input
-        type="text"
-        name="text"
-        placeholder="type something"
-        value={input}
-        onChange={(e) => setInput(e.target.value)}
-      />
-      <input type="button" value="Generate Images" onClick={generateImages} />
-      {selectedUrl && (
-        <input
-          type="button"
-          value="Generate Variation"
-          onClick={generateVariation}
+    <>
+      <h1>Generate Images by text</h1>
+      <Space direction="vertical" style={{ display: "flex" }}>
+        <Input
+          placeholder="type something"
+          value={input}
+          onChange={(e) => setInput(e.target.value)}
         />
-      )}
-      <div className={styles.result}>
-        {result.length > 0 &&
-          result.map(({ url }) => (
-            <img
-              key={url}
-              src={url}
-              width={256}
-              height={256}
-              alt="img"
-              onClick={() => setSelectedUrl(url)}
-              className={url === selectedUrl ? styles.selectedImage : ""}
-            />
-          ))}
-      </div>
-    </main>
+        <Button type="primary" loading={isLoading} onClick={generateImages}>
+          {isLoading ? "Loading" : "Generate Images"}
+        </Button>
+        {selectedUrl && (
+          <Button
+            type="primary"
+            loading={isLoading}
+            onClick={generateVariation}
+          >
+            {isLoading ? "Loading" : "Generate Variation"}
+          </Button>
+        )}
+        <div>
+          {result.length > 0 &&
+            result.map(({ url }) => (
+              <Image
+                key={url}
+                src={url}
+                width={url === selectedUrl ? 320 : 256}
+                onClick={() => setSelectedUrl(url)}
+                preview={false}
+              />
+            ))}
+        </div>
+      </Space>
+    </>
   );
 }

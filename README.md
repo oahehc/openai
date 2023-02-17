@@ -8,6 +8,4 @@
 
 ### To-Do List
 
-[ ] add loading icon and disabled button
 [ ] template for page and API
-[ ] CSS framework or UI library

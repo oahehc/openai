@@ -57,7 +57,7 @@ export default async function (req: NextApiRequest, res: NextApiResponse) {
   }
 }
 
-const TIME_OUT_MS = 10 * 1000;
+const TIME_OUT_MS = 20 * 1000;
 
 function downloadFile(url, filePath) {
   const file = createWriteStream(filePath);

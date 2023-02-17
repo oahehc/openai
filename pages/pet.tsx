@@ -1,5 +1,5 @@
 import { useState } from "react";
-import styles from "./index.module.css";
+import styles from "../styles/index.module.css";
 
 export default function Page() {
   const [animalInput, setAnimalInput] = useState("");
