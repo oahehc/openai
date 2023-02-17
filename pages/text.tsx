@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Input, List, Button, Space, Alert } from "antd";
+import { Input, List, Button, Space, Alert, Slider } from "antd";
 import { fetcher } from "../utils/fetcher";
 
 const { TextArea } = Input;
@@ -50,6 +50,31 @@ export default function Page() {
     }
   }
 
+  const [moderationResult, setModerationResult] = useState<
+    Record<string, number>
+  >({});
+  async function getModeration() {
+    try {
+      setIsLoading(true);
+      setError("");
+      setModerationResult({});
+
+      const data = await fetcher({
+        method: "POST",
+        path: "/api/moderation",
+        body: { text },
+      });
+      console.log("data", data);
+
+      setModerationResult(data.result?.[0]?.category_scores || {});
+    } catch (error) {
+      console.error(error);
+      setError(error.message);
+    } finally {
+      setIsLoading(false);
+    }
+  }
+
   return (
     <>
       <h1>Modify the sentence</h1>
@@ -68,6 +93,9 @@ export default function Page() {
           <Button type="primary" loading={isLoading} onClick={getEdit}>
             {isLoading ? "Loading" : "Edit"}
           </Button>
+          <Button type="primary" loading={isLoading} onClick={getModeration}>
+            {isLoading ? "Loading" : "Moderation"}
+          </Button>
         </Space>
         <List
           header={<h3>Result</h3>}
@@ -75,6 +103,34 @@ export default function Page() {
           dataSource={result}
           renderItem={(item) => <List.Item>{item.text}</List.Item>}
         />
+        {moderationResult && (
+          <List
+            header={<h3>Moderation</h3>}
+            bordered
+            dataSource={Object.entries(moderationResult)}
+            renderItem={([category, number]) => (
+              <List.Item>
+                <div
+                  style={{
+                    width: "280px",
+                    fontSize: "1.2rem",
+                  }}
+                >
+                  {category}
+                </div>
+                <div style={{ flex: 1 }}>
+                  <Slider
+                    marks={{
+                      [number * 100]: number * 100,
+                    }}
+                    defaultValue={number * 100}
+                    disabled
+                  />
+                </div>
+              </List.Item>
+            )}
+          />
+        )}
         {error && (
           <Alert message="Error" description={error} type="error" showIcon />
         )}

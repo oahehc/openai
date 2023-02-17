@@ -4,11 +4,11 @@ import { List } from "antd";
 const links = [
   {
     path: "/text",
-    description: "Text completion and editing",
+    description: "Text",
   },
   {
     path: "/images",
-    description: "Text to Images",
+    description: "Images",
   },
   {
     path: "/pet",
