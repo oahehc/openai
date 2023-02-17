@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Input, List, Button, Space, Alert, Slider } from "antd";
 import { fetcher } from "../utils/fetcher";
+import CopyButton from "../components/CopyButton";
 
 const { TextArea } = Input;
 
@@ -148,7 +149,12 @@ export default function Page() {
           header={<h3>Result</h3>}
           bordered
           dataSource={result}
-          renderItem={(item) => <List.Item>{item.text}</List.Item>}
+          renderItem={({ text }) => (
+            <List.Item style={{ display: "flex" }}>
+              <CopyButton content={text} />
+              <p style={{ flex: 1, marginLeft: "8px" }}>{text}</p>
+            </List.Item>
+          )}
         />
         {moderationResult && (
           <List
@@ -168,7 +174,7 @@ export default function Page() {
                 <div style={{ flex: 1 }}>
                   <Slider
                     marks={{
-                      [number * 100]: number * 100,
+                      [number * 100]: (number * 100).toFixed(4),
                     }}
                     defaultValue={number * 100}
                     disabled
