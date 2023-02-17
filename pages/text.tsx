@@ -30,6 +30,26 @@ export default function Page() {
     }
   }
 
+  async function getEdit() {
+    try {
+      setIsLoading(true);
+      setError("");
+
+      const data = await fetcher({
+        method: "POST",
+        path: "/api/edit",
+        body: { text },
+      });
+
+      setResult(data.result);
+    } catch (error) {
+      console.error(error);
+      setError(error.message);
+    } finally {
+      setIsLoading(false);
+    }
+  }
+
   return (
     <>
       <h1>Modify the sentence</h1>
@@ -41,9 +61,14 @@ export default function Page() {
           placeholder="Enter a sentence"
           autoSize={{ minRows: 3, maxRows: 5 }}
         />
-        <Button type="primary" loading={isLoading} onClick={getCompletion}>
-          {isLoading ? "Loading" : "Completion"}
-        </Button>
+        <Space>
+          <Button type="primary" loading={isLoading} onClick={getCompletion}>
+            {isLoading ? "Loading" : "Completion"}
+          </Button>
+          <Button type="primary" loading={isLoading} onClick={getEdit}>
+            {isLoading ? "Loading" : "Edit"}
+          </Button>
+        </Space>
         <List
           header={<h3>Result</h3>}
           bordered
