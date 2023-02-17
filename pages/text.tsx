@@ -7,90 +7,72 @@ const { TextArea } = Input;
 
 export default function Page() {
   const [text, setText] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(0);
   const [error, setError] = useState("");
-  const [result, setResult] = useState<any[]>();
+  const [result, setResult] = useState<any[]>([]);
 
-  async function getTranslations() {
+  function startFetching() {
+    setIsLoading((cur) => cur + 1);
+    setError("");
+  }
+  function finishFetching() {
+    setIsLoading((cur) => cur - 1);
+  }
+
+  async function useCompletion(text) {
     try {
-      setIsLoading(true);
-      setError("");
+      startFetching();
 
       const data = await fetcher({
         method: "POST",
         path: "/api/completion",
         body: {
-          text: `Translate this into 1. Chinese, 2. Japanese:\n\n${text}\n\n`,
+          text,
         },
       });
 
-      setResult(data.result);
+      setResult((cur) => [...cur, ...data.result]);
     } catch (error) {
       console.error(error);
       setError(error.message);
     } finally {
-      setIsLoading(false);
+      finishFetching();
     }
   }
-
-  async function checkGrammar() {
+  async function useEdit(text, instruction) {
     try {
-      setIsLoading(true);
-      setError("");
-
-      const data = await fetcher({
-        method: "POST",
-        path: "/api/completion",
-        body: { text: `Correct this to standard English:\n\n${text}` },
-      });
-
-      setResult(data.result);
-    } catch (error) {
-      console.error(error);
-      setError(error.message);
-    } finally {
-      setIsLoading(false);
-    }
-  }
-
-  async function getCompletion() {
-    try {
-      setIsLoading(true);
-      setError("");
-
-      const data = await fetcher({
-        method: "POST",
-        path: "/api/completion",
-        body: { text },
-      });
-
-      setResult(data.result);
-    } catch (error) {
-      console.error(error);
-      setError(error.message);
-    } finally {
-      setIsLoading(false);
-    }
-  }
-
-  async function getEdit() {
-    try {
-      setIsLoading(true);
-      setError("");
+      startFetching();
 
       const data = await fetcher({
         method: "POST",
         path: "/api/edit",
-        body: { text },
+        body: {
+          text,
+          instruction,
+        },
       });
 
-      setResult(data.result);
+      setResult((cur) => [...cur, ...data.result]);
     } catch (error) {
       console.error(error);
       setError(error.message);
     } finally {
-      setIsLoading(false);
+      finishFetching();
     }
+  }
+
+  function getTranslations() {
+    useCompletion(
+      `Translate this into 1. Chinese, 2. Japanese:\n\n${text}\n\n`
+    );
+  }
+  function checkGrammar() {
+    useCompletion(`Correct this to standard English:\n\n${text}`);
+    useCompletion(`To make 「${text}」 close to native speaker, we can say:`);
+    useEdit(text, "Fix the grammar mistakes");
+  }
+  function getCompletion() {
+    useCompletion(text);
   }
 
   const [moderationResult, setModerationResult] = useState<
@@ -98,8 +80,7 @@ export default function Page() {
   >({});
   async function getModeration() {
     try {
-      setIsLoading(true);
-      setError("");
+      startFetching();
       setModerationResult({});
 
       const data = await fetcher({
@@ -113,7 +94,7 @@ export default function Page() {
       console.error(error);
       setError(error.message);
     } finally {
-      setIsLoading(false);
+      finishFetching();
     }
   }
 
@@ -126,35 +107,45 @@ export default function Page() {
           value={text}
           onChange={(e) => setText(e.target.value)}
           placeholder="Enter a sentence"
-          autoSize={{ minRows: 3, maxRows: 5 }}
+          autoSize={{ minRows: 4, maxRows: 8 }}
         />
         <Space>
-          <Button type="primary" loading={isLoading} onClick={getTranslations}>
-            {isLoading ? "Loading" : "Translate"}
-          </Button>
-          <Button type="primary" loading={isLoading} onClick={checkGrammar}>
+          <Button type="primary" loading={!!isLoading} onClick={checkGrammar}>
             {isLoading ? "Loading" : "Grammar"}
           </Button>
-          <Button type="primary" loading={isLoading} onClick={getCompletion}>
+          <Button
+            type="primary"
+            loading={!!isLoading}
+            onClick={getTranslations}
+          >
+            {isLoading ? "Loading" : "Translate"}
+          </Button>
+          <Button type="primary" loading={!!isLoading} onClick={getCompletion}>
             {isLoading ? "Loading" : "Completion"}
           </Button>
-          <Button type="primary" loading={isLoading} onClick={getEdit}>
-            {isLoading ? "Loading" : "Edit"}
-          </Button>
-          <Button type="primary" loading={isLoading} onClick={getModeration}>
+          <Button type="primary" loading={!!isLoading} onClick={getModeration}>
             {isLoading ? "Loading" : "Moderation"}
           </Button>
         </Space>
         <List
           header={<h3>Result</h3>}
+          footer={
+            <Button danger onClick={() => setResult([])}>
+              reset
+            </Button>
+          }
           bordered
           dataSource={result}
-          renderItem={({ text }) => (
-            <List.Item style={{ display: "flex" }}>
-              <CopyButton content={text} />
-              <p style={{ flex: 1, marginLeft: "8px" }}>{text}</p>
-            </List.Item>
-          )}
+          renderItem={({ text }) => {
+            return (
+              text && (
+                <List.Item style={{ display: "flex" }}>
+                  <CopyButton content={text} />
+                  <p style={{ flex: 1, marginLeft: "8px" }}>{text}</p>
+                </List.Item>
+              )
+            );
+          }}
         />
         {moderationResult && (
           <List

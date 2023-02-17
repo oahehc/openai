@@ -12,8 +12,16 @@ export default async function (req: NextApiRequest, res: NextApiResponse) {
     return;
   }
 
-  const text = req.body.text || "";
-  if (text.trim().length === 0) {
+  const { text, instruction } = req.body;
+  if (!text || text.trim().length === 0) {
+    res.status(400).json({
+      error: {
+        message: "Please enter a valid text",
+      },
+    });
+    return;
+  }
+  if (!instruction || instruction.trim().length === 0) {
     res.status(400).json({
       error: {
         message: "Please enter a valid text",
@@ -26,9 +34,9 @@ export default async function (req: NextApiRequest, res: NextApiResponse) {
     const result = await openai.createEdit({
       model: "text-davinci-edit-001",
       input: text,
-      instruction: "Fix the grammar mistakes",
-      n: 3,
-      temperature: 1.2,
+      instruction,
+      n: 2,
+      temperature: 1.5,
       // top_p: 1,
     });
 
