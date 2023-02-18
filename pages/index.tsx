@@ -11,6 +11,10 @@ const links = [
     description: "Images",
   },
   {
+    path: "/moderation",
+    description: "Moderation",
+  },
+  {
     path: "/pet",
     description: "Generate pet name (tutorial)",
   },
