@@ -7,6 +7,10 @@ const links = [
     description: "Text",
   },
   {
+    path: "/japanese",
+    description: "Japanese",
+  },
+  {
     path: "/images",
     description: "Images",
   },

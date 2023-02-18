@@ -1,23 +1,27 @@
 import { useState } from "react";
-import { Input, List, Button, Space, Alert, Tag, Badge } from "antd";
+import { Input, List, Button, Space, Alert, Tag } from "antd";
 import { fetcher } from "../utils/fetcher";
 import CopyButton from "../components/CopyButton";
-import useCount from "../hooks/useCount";
 
 const { TextArea } = Input;
 
 type ApiType = "completion" | "edit";
-type TagType = "correction" | "native" | "translation" | "casual";
+type TagType =
+  | "fix-grammar"
+  | "correction"
+  | "native"
+  | "translation"
+  | "casual";
 
 // support color: https://ant.design/components/tag
 const TagColorMap: Record<TagType | ApiType, string> = {
   completion: "default",
   edit: "default",
+  "fix-grammar": "volcano",
   correction: "gold",
   native: "geekblue",
   translation: "purple",
   casual: "cyan",
-  // "fix-grammar": "volcano",
   // temp: 'orange',
   // temp: 'magenta',
 };
@@ -29,7 +33,6 @@ export default function Page() {
   const [result, setResult] = useState<
     { text: string; tags: (TagType | ApiType)[] }[]
   >([]);
-  const { getCount, addCount, resetAll } = useCount();
 
   async function sendRequest({
     type,
@@ -67,46 +70,39 @@ export default function Page() {
     }
   }
 
-  function getTranslations() {
-    sendRequest({
-      type: "completion",
-      text: `Translate this into 1. Chinese, 2. Japanese:\n\n${text}\n\n`,
-      tags: ["translation"],
-    });
-  }
   function handelSubmit() {
     setResult([]);
     sendRequest({
-      type: "completion",
-      text: `Correct this to standard English:\n\n${text}`,
-      tags: ["correction"],
-    });
-    sendRequest({
       type: "edit",
       text,
-      instruction: "Fix the grammar mistakes",
+      instruction: "文法の間違いを直す",
       tags: ["correction"],
     });
     sendRequest({
       type: "completion",
-      text: `Make this sound more natural:\n\n${text}`,
+      text: `文法の間違いを直す:\n\n${text}`,
+      tags: ["correction"],
+    });
+    sendRequest({
+      type: "completion",
+      text: `より自然に聞こえるようにする:\n\n${text}`,
       tags: ["native"],
     });
     sendRequest({
       type: "edit",
       text,
-      instruction: "Make it sound more natural",
+      instruction: "より自然に聞こえるようにする",
       tags: ["native"],
     });
     sendRequest({
       type: "completion",
-      text: `Make this sound less formal:\n\n${text}`,
+      text: `敬語を使わない:\n\n${text}`,
       tags: ["casual"],
     });
     sendRequest({
       type: "edit",
       text,
-      instruction: "Make it sound less formal",
+      instruction: "敬語を使わない",
       tags: ["casual"],
     });
   }
@@ -120,16 +116,15 @@ export default function Page() {
 
   function handleClear() {
     setResult([]);
-    resetAll();
   }
 
   return (
     <>
-      <h1>Grammar Check</h1>
+      <h1>日本語の文法</h1>
       <Space direction="vertical" style={{ display: "flex" }}>
         <TextArea
           size="large"
-          placeholder="Enter here"
+          placeholder="入力"
           autoSize={{ minRows: 4, maxRows: 6 }}
           value={text}
           onChange={(e) => setText(e.target.value)}
@@ -137,17 +132,14 @@ export default function Page() {
         />
         <Space>
           <Button type="primary" loading={isLoading > 0} onClick={handelSubmit}>
-            {isLoading ? "Loading" : "Submit"}
-          </Button>
-          <Button loading={isLoading > 0} onClick={getTranslations}>
-            {isLoading ? "Loading" : "Translate"}
+            {isLoading ? "加載中" : "提出"}
           </Button>
         </Space>
         <List
-          header={<h3>Result</h3>}
+          header={<h3>結果</h3>}
           footer={
             <Button danger onClick={handleClear}>
-              Clear
+              リセット
             </Button>
           }
           bordered
@@ -156,12 +148,7 @@ export default function Page() {
             return (
               text && (
                 <List.Item style={{ display: "flex" }}>
-                  <Badge count={getCount(`en-${tags.join("-")}`)}>
-                    <CopyButton
-                      content={text}
-                      onClick={() => addCount(`en-${tags.join("-")}`)}
-                    />
-                  </Badge>
+                  <CopyButton content={text} />
                   <p style={{ flex: 1, marginLeft: "20px" }}>{text}</p>
                   {tags.map((tag) => (
                     <Tag key={tag} color={TagColorMap[tag]}>
