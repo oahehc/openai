@@ -5,23 +5,34 @@ import CopyButton from "../components/CopyButton";
 
 const { TextArea } = Input;
 
-type TagType = "fix-grammar" | "correction" | "native" | "translation";
+type ApiType = "completion" | "edit";
+type TagType =
+  | "fix-grammar"
+  | "correction"
+  | "native"
+  | "translation"
+  | "casual";
+
 // support color: https://ant.design/components/tag
-const TagColorMap: Record<TagType, string> = {
-  "fix-grammar": "magenta",
+const TagColorMap: Record<TagType | ApiType, string> = {
+  completion: "default",
+  edit: "default",
+  "fix-grammar": "volcano",
   correction: "gold",
   native: "geekblue",
-  translation: "volcano",
+  translation: "purple",
+  casual: "cyan",
   // temp: 'orange',
-  // temp: 'cyan',
-  // temp: 'purple',
+  // temp: 'magenta',
 };
 
 export default function Page() {
   const [text, setText] = useState("");
   const [isLoading, setIsLoading] = useState(0);
   const [error, setError] = useState("");
-  const [result, setResult] = useState<any[]>([]);
+  const [result, setResult] = useState<
+    { text: string; tags: (TagType | ApiType)[] }[]
+  >([]);
 
   async function sendRequest({
     type,
@@ -29,10 +40,10 @@ export default function Page() {
     instruction,
     tags = [],
   }: {
-    type: "completion" | "edit";
+    type: ApiType;
     text: string;
-    tags?: TagType[];
     instruction?: string;
+    tags?: TagType[];
   }) {
     try {
       setIsLoading((cur) => cur + 1);
@@ -49,7 +60,7 @@ export default function Page() {
 
       setResult((cur) => [
         ...cur,
-        ...data.result.map(({ text }) => ({ text, tags })),
+        ...data.result.map(({ text }) => ({ text, tags: [...tags, type] })),
       ]);
     } catch (error) {
       console.error(error);
@@ -67,6 +78,7 @@ export default function Page() {
     });
   }
   function handelSubmit() {
+    setResult([]);
     sendRequest({
       type: "completion",
       text: `Correct this to standard English:\n\n${text}`,
@@ -74,14 +86,31 @@ export default function Page() {
     });
     sendRequest({
       type: "completion",
-      text: `To make 「${text}」 close to native speaker, we can say:`,
+      text: `Make this sound more natural:\n\n${text}`,
       tags: ["native"],
+    });
+    sendRequest({
+      type: "completion",
+      text: `Make this sound less formal:\n\n${text}`,
+      tags: ["casual"],
     });
     sendRequest({
       type: "edit",
       text,
       instruction: "Fix the grammar mistakes",
       tags: ["fix-grammar"],
+    });
+    sendRequest({
+      type: "edit",
+      text,
+      instruction: "Make it sound less formal",
+      tags: ["casual"],
+    });
+    sendRequest({
+      type: "edit",
+      text,
+      instruction: "Make it sound more natural",
+      tags: ["native"],
     });
   }
 

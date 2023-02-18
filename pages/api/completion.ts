@@ -31,7 +31,7 @@ export default async function (req: NextApiRequest, res: NextApiResponse) {
       max_tokens: 100,
       temperature: 1.2,
       // top_p: 1,
-      n: 2,
+      n: 1,
       // best_of: 3,
       presence_penalty: 0,
       frequency_penalty: 0,

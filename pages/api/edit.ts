@@ -36,7 +36,7 @@ export default async function (req: NextApiRequest, res: NextApiResponse) {
       model: "text-davinci-edit-001",
       input: text,
       instruction,
-      n: 2,
+      n: 1,
       temperature: 0.9,
       // top_p: 1,
     });
