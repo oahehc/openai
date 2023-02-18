@@ -3,9 +3,10 @@ import { CopyFilled, CopyOutlined } from "@ant-design/icons";
 
 type Props = {
   content: string;
+  onClick?: () => void;
 };
 
-const CopyButton = ({ content }: Props) => {
+const CopyButton = ({ content, onClick }: Props) => {
   const [copySuccess, setCopySuccess] = useState(false);
 
   function copyText() {
@@ -30,6 +31,8 @@ const CopyButton = ({ content }: Props) => {
       document.execCommand("copy");
       textArea.remove();
     }
+
+    if (onClick) onClick();
   }
 
   return (

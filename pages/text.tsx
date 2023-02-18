@@ -1,7 +1,8 @@
 import { useState } from "react";
-import { Input, List, Button, Space, Alert, Tag } from "antd";
+import { Input, List, Button, Space, Alert, Tag, Badge } from "antd";
 import { fetcher } from "../utils/fetcher";
 import CopyButton from "../components/CopyButton";
+import useCount from "../hooks/useCount";
 
 const { TextArea } = Input;
 
@@ -33,6 +34,7 @@ export default function Page() {
   const [result, setResult] = useState<
     { text: string; tags: (TagType | ApiType)[] }[]
   >([]);
+  const { getCount, addCount, resetAll } = useCount();
 
   async function sendRequest({
     type,
@@ -121,6 +123,11 @@ export default function Page() {
     }
   }
 
+  function handleClear() {
+    setResult([]);
+    resetAll();
+  }
+
   return (
     <>
       <h1>Grammar Check</h1>
@@ -144,8 +151,8 @@ export default function Page() {
         <List
           header={<h3>Result</h3>}
           footer={
-            <Button danger onClick={() => setResult([])}>
-              reset
+            <Button danger onClick={handleClear}>
+              Clear
             </Button>
           }
           bordered
@@ -154,8 +161,13 @@ export default function Page() {
             return (
               text && (
                 <List.Item style={{ display: "flex" }}>
-                  <CopyButton content={text} />
-                  <p style={{ flex: 1, marginLeft: "8px" }}>{text}</p>
+                  <Badge count={getCount(tags.join("-"))}>
+                    <CopyButton
+                      content={text}
+                      onClick={() => addCount(tags.join("-"))}
+                    />
+                  </Badge>
+                  <p style={{ flex: 1, marginLeft: "20px" }}>{text}</p>
                   {tags.map((tag) => (
                     <Tag key={tag} color={TagColorMap[tag]}>
                       {tag}
