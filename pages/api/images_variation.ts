@@ -3,6 +3,7 @@ import path from "node:path";
 import { GENERATE_IMAGE_NUM, IMAGE_SIZE } from "../../utils/constants";
 import { downloadFile } from "../../utils/file";
 import { configuration, openai } from "../../utils/openAI";
+import { apiErrorHandler } from "../../utils/apiErrorHandler";
 import type { NextApiRequest, NextApiResponse } from "next";
 
 export default async function (req: NextApiRequest, res: NextApiResponse) {
@@ -37,17 +38,6 @@ export default async function (req: NextApiRequest, res: NextApiResponse) {
     );
     res.status(200).json({ result: response.data });
   } catch (error) {
-    // Consider adjusting the error handling logic for your use case
-    if (error.response) {
-      console.error(error.response.status, error.response.data);
-      res.status(error.response.status).json(error.response.data);
-    } else {
-      console.error(`Error with OpenAI API request: ${error.message}`);
-      res.status(500).json({
-        error: {
-          message: "An error occurred during your request.",
-        },
-      });
-    }
+    apiErrorHandler("/images_variation", res, error);
   }
 }
