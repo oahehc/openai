@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Input, List, Button, Space, Alert, Slider } from "antd";
+import { Input, List, Button, Space, Alert } from "antd";
 import { fetcher } from "../utils/fetcher";
 import CopyButton from "../components/CopyButton";
 
@@ -66,65 +66,37 @@ export default function Page() {
       `Translate this into 1. Chinese, 2. Japanese:\n\n${text}\n\n`
     );
   }
-  function checkGrammar() {
+  function handelSubmit() {
     useCompletion(`Correct this to standard English:\n\n${text}`);
     useCompletion(`To make 「${text}」 close to native speaker, we can say:`);
     useEdit(text, "Fix the grammar mistakes");
   }
-  function getCompletion() {
-    useCompletion(text);
-  }
 
-  const [moderationResult, setModerationResult] = useState<
-    Record<string, number>
-  >({});
-  async function getModeration() {
-    try {
-      startFetching();
-      setModerationResult({});
-
-      const data = await fetcher({
-        method: "POST",
-        path: "/api/moderation",
-        body: { text },
-      });
-
-      setModerationResult(data.result?.[0]?.category_scores || {});
-    } catch (error) {
-      console.error(error);
-      setError(error.message);
-    } finally {
-      finishFetching();
+  function handleEnter(e) {
+    if (e.isTrusted && !e.shiftKey) {
+      e.preventDefault();
+      handelSubmit();
     }
   }
 
   return (
     <>
-      <h1>Modify the sentence</h1>
+      <h1>Grammar Check</h1>
       <Space direction="vertical" style={{ display: "flex" }}>
         <TextArea
           size="large"
+          placeholder="Enter here"
+          autoSize={{ minRows: 4, maxRows: 6 }}
           value={text}
           onChange={(e) => setText(e.target.value)}
-          placeholder="Enter a sentence"
-          autoSize={{ minRows: 4, maxRows: 8 }}
+          onPressEnter={handleEnter}
         />
         <Space>
-          <Button type="primary" loading={!!isLoading} onClick={checkGrammar}>
-            {isLoading ? "Loading" : "Grammar"}
+          <Button type="primary" loading={isLoading > 0} onClick={handelSubmit}>
+            {isLoading ? "Loading" : "Submit"}
           </Button>
-          <Button
-            type="primary"
-            loading={!!isLoading}
-            onClick={getTranslations}
-          >
+          <Button loading={isLoading > 0} onClick={getTranslations}>
             {isLoading ? "Loading" : "Translate"}
-          </Button>
-          <Button type="primary" loading={!!isLoading} onClick={getCompletion}>
-            {isLoading ? "Loading" : "Completion"}
-          </Button>
-          <Button type="primary" loading={!!isLoading} onClick={getModeration}>
-            {isLoading ? "Loading" : "Moderation"}
           </Button>
         </Space>
         <List
@@ -147,34 +119,6 @@ export default function Page() {
             );
           }}
         />
-        {moderationResult && (
-          <List
-            header={<h3>Moderation</h3>}
-            bordered
-            dataSource={Object.entries(moderationResult)}
-            renderItem={([category, number]) => (
-              <List.Item>
-                <div
-                  style={{
-                    width: "280px",
-                    fontSize: "1.2rem",
-                  }}
-                >
-                  {category}
-                </div>
-                <div style={{ flex: 1 }}>
-                  <Slider
-                    marks={{
-                      [number * 100]: (number * 100).toFixed(4),
-                    }}
-                    defaultValue={number * 100}
-                    disabled
-                  />
-                </div>
-              </List.Item>
-            )}
-          />
-        )}
         {error && (
           <Alert message="Error" description={error} type="error" showIcon />
         )}
