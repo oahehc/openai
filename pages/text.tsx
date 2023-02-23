@@ -134,6 +134,8 @@ export default function Page() {
           value={text}
           onChange={(e) => setText(e.target.value)}
           onPressEnter={handleEnter}
+          allowClear
+          autoFocus
         />
         <Space>
           <Button type="primary" loading={isLoading > 0} onClick={handelSubmit}>
