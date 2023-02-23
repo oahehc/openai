@@ -1,6 +1,21 @@
 import { useState } from "react";
-import { Input, Image, Button, Space, Alert } from "antd";
+import { Input, Image, Button, Space, Alert, Select } from "antd";
 import { fetcher } from "../utils/fetcher";
+
+const artists = [
+  "Leonardo da Vinci",
+  "Pablo Picasso",
+  "Michelangelo",
+  "Claude Monet",
+  "Rembrandt Van Rijn",
+  "Frida Kahlo",
+  "Salvador Dali",
+  "Johannes Vermeer",
+  "Pierre-Auguste Renoir",
+].map((v) => ({
+  value: v,
+  label: v,
+}));
 
 export default function Page() {
   const [input, setInput] = useState("");
@@ -8,6 +23,7 @@ export default function Page() {
   const [error, setError] = useState("");
   const [result, setResult] = useState([]);
   const [selectedUrl, setSelectedUrl] = useState("");
+  const [selectedArtist, setArtist] = useState("");
 
   async function generateImages() {
     if (input) {
@@ -15,10 +31,15 @@ export default function Page() {
         setIsLoading(true);
         setError("");
 
+        let text = input;
+        if (selectedArtist) {
+          text = `${text} in style of ${selectedArtist}`;
+        }
+
         const data = await fetcher({
           method: "POST",
           path: "/api/images_generation",
-          body: { text: input },
+          body: { text },
         });
 
         setResult(data.result.data);
@@ -52,6 +73,12 @@ export default function Page() {
       }
     }
   }
+  function handleEnter(e) {
+    if (e.isTrusted && !e.shiftKey) {
+      e.preventDefault();
+      generateImages();
+    }
+  }
 
   return (
     <>
@@ -61,7 +88,16 @@ export default function Page() {
           placeholder="type something"
           value={input}
           onChange={(e) => setInput(e.target.value)}
+          onPressEnter={handleEnter}
         />
+        <Space>
+          <span>in style of</span>
+          <Select
+            style={{ width: 240 }}
+            onChange={setArtist}
+            options={artists}
+          />
+        </Space>
         <Space>
           <Button type="primary" loading={isLoading} onClick={generateImages}>
             {isLoading ? "Loading" : "Generate Images"}
@@ -78,9 +114,18 @@ export default function Page() {
               <Image
                 key={url}
                 src={url}
-                width={url === selectedUrl ? 320 : 256}
-                onClick={() => setSelectedUrl(url)}
+                width={256}
                 preview={false}
+                onClick={() => setSelectedUrl(url)}
+                style={
+                  url === selectedUrl
+                    ? {
+                        transform: "scale(1.25)",
+                        zIndex: 1,
+                        position: "relative",
+                      }
+                    : { cursor: "pointer" }
+                }
               />
             ))}
         </div>
