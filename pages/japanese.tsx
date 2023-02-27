@@ -11,7 +11,8 @@ type TagType =
   | "correction"
   | "native"
   | "translation"
-  | "casual";
+  | "casual"
+  | "business";
 
 // support color: https://ant.design/components/tag
 const TagColorMap: Record<TagType | ApiType, string> = {
@@ -22,7 +23,7 @@ const TagColorMap: Record<TagType | ApiType, string> = {
   native: "geekblue",
   translation: "purple",
   casual: "cyan",
-  // temp: 'orange',
+  business: "orange",
   // temp: 'magenta',
 };
 
@@ -85,13 +86,13 @@ export default function Page() {
     });
     sendRequest({
       type: "completion",
-      text: `より自然に聞こえるようにする:\n\n${text}`,
+      text: `日常的な会話にする:\n\n${text}`,
       tags: ["native"],
     });
     sendRequest({
       type: "edit",
       text,
-      instruction: "より自然に聞こえるようにする",
+      instruction: "日常的な会話にする",
       tags: ["native"],
     });
     sendRequest({
@@ -104,6 +105,17 @@ export default function Page() {
       text,
       instruction: "敬語を使わない",
       tags: ["casual"],
+    });
+    sendRequest({
+      type: "completion",
+      text: `ビジネスっぽい、丁寧にする:\n\n${text}`,
+      tags: ["business"],
+    });
+    sendRequest({
+      type: "edit",
+      text,
+      instruction: "ビジネスっぽい、丁寧にする",
+      tags: ["business"],
     });
   }
 
