@@ -78,37 +78,38 @@ export default function Page() {
     setResult([]);
     sendRequest({
       type: "completion",
-      text: `Correct this to standard English:\n\n${text}`,
-      tags: ["correction"],
-    });
-    sendRequest({
-      type: "edit",
-      text,
-      instruction: "Fix the grammar mistakes",
+      text: `Correct this to standard English: ${text}. The correct sentence is: `,
       tags: ["correction"],
     });
     sendRequest({
       type: "completion",
-      text: `Make this sound more natural:\n\n${text}`,
-      tags: ["native"],
-    });
-    sendRequest({
-      type: "edit",
-      text,
-      instruction: "Make it sound more natural",
+      text: `Make this sound more natural: ${text}. This sounds more natural: `,
       tags: ["native"],
     });
     sendRequest({
       type: "completion",
-      text: `Make this sound less formal:\n\n${text}`,
+      text: `Make this sound less formal: ${text}. This sounds less formal: `,
       tags: ["casual"],
     });
-    sendRequest({
-      type: "edit",
-      text,
-      instruction: "Make it sound less formal",
-      tags: ["casual"],
-    });
+
+    // sendRequest({
+    //   type: "edit",
+    //   text,
+    //   instruction: "Fix the grammar mistakes",
+    //   tags: ["correction"],
+    // });
+    // sendRequest({
+    //   type: "edit",
+    //   text,
+    //   instruction: "Make it sound more natural",
+    //   tags: ["native"],
+    // });
+    // sendRequest({
+    //   type: "edit",
+    //   text,
+    //   instruction: "Make it sound less formal",
+    //   tags: ["casual"],
+    // });
   }
 
   function handleEnter(e) {
