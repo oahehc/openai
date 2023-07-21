@@ -33,7 +33,7 @@ export default async function (req: NextApiRequest, res: NextApiResponse) {
 
   try {
     const result = await openai.createEdit({
-      model: "text-davinci-edit-001",
+      model: "gpt-3.5-turbo",
       input: text,
       instruction,
       n: 1,
