@@ -57,7 +57,10 @@ export default function Page() {
 
       setResult((cur) => [
         ...cur,
-        ...data.result.map(({ text }) => ({ text, tags: [...tags, type] })),
+        ...data.result.map(({ message }) => ({
+          text: message.content,
+          tags: [...tags, type],
+        })),
       ]);
     } catch (error) {
       console.error(error);
